@@ -5,62 +5,202 @@ import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 
 const model = new ChatOpenAI({
-  model: "gpt-3.5-turbo",
+//   model: "gpt-3.5-turbo",
+  model: "gpt-4.1",
   temperature: 0.7,
 });
 
+// const data = [
+//   //   "My name is John Doe. I am a software engineer with 5 years of experience in web development. I love coding and learning new technologies.",
+//   //   "I am Jane Smith, a data scientist with a passion for machine learning. I have worked on various projects involving data analysis and visualization.",
+//   `Acceptance Criteria for Create Measure Field
+// Key Properties Definition:
+
+// Admin must be able to define key properties:
+// Measurement Name (required)
+// Field and column to apply the measurement on (required)
+// Conditions
+// Data Source Options:
+
+// Can be a measure, table, or subquery.
+// Alias Management:
+
+// Alias must not be duplicated.
+// Alias is required unless the field type is Table.
+// Value Type Rules:
+
+// User can specify value as either numerical or string.
+// Table Type Rules:
+
+// User can select either primary or joined tables (tables must be joined prior).
+// If a joined table is removed, the system must notify the user about unavailable fields.
+// User must GROUP BY data before applying an aggregate function for summarizing records.`,
+
+//   `Acceptance Criteria for Create Measure Type Filter
+// Query Filters:
+
+// Admin can add multiple query filters.
+// Filter Logic:
+
+// System supports combining multiple filters with AND logic.
+// Filter Key Properties:
+
+// Admin specifies table, column, operation, and value for filters.
+// Table Selection:
+
+// Admin can use a selected table for creating a filter without prior joining.
+// Error Handling:
+
+// If a table or column in the filter is deleted or unavailable, the system must alert the user and require correction.
+// Validation:
+
+// System must validate all required fields before saving; otherwise, display a proper alert message.
+// Saving Requirements:
+
+// Filter and field must be created before saving the measurement.`,
+// ];
+
+// const data = [
+// 	{
+// 	  "Create Measure Field": {
+// 	    "Key Properties Definition": {
+// 	      "Measurement Name": "required",
+// 	      "Field and column": "required",
+// 	      "Conditions": "optional"
+// 	    },
+// 	    "Data Source Options": [
+// 	      "measure",
+// 	      "table",
+// 	      "subquery"
+// 	    ],
+// 	    "Alias Management": {
+// 	      "Alias must not be duplicated": true,
+// 	      "Alias is required unless field type is Table": true
+// 	    },
+// 	    "Value Type Rules": {
+// 	      "User can specify value": [
+// 		"numerical",
+// 		"string"
+// 	      ]
+// 	    },
+// 	    "Table Type Rules": {
+// 	      "User can select": [
+// 		"primary table",
+// 		"joined table"
+// 	      ],
+// 	      "Joined table removal notification": true,
+// 	      "GROUP BY requirement": true
+// 	    }
+// 	  }
+// 	},
+// 	{
+// 	  "Create Measure Type Filter": {
+// 	    "Query Filters": {
+// 	      "Admin can add multiple filters": true
+// 	    },
+// 	    "Filter Logic": {
+// 	      "AND logic support": true
+// 	    },
+// 	    "Filter Key Properties": {
+// 	      "Table": "required",
+// 	      "Column": "required",
+// 	      "Operation": "required",
+// 	      "Value": "required"
+// 	    },
+// 	    "Table Selection": {
+// 	      "Use selected table without prior joining": true
+// 	    },
+// 	    "Error Handling": {
+// 	      "Alert for deleted or unavailable tables/columns": true
+// 	    },
+// 	    "Validation": {
+// 	      "All required fields validated before saving": true
+// 	    },
+// 	    "Saving Requirements": {
+// 	      "Filter and field creation required before saving": true
+// 	    }
+// 	  }
+// 	}
+//       ]
+
 const data = [
-  //   "My name is John Doe. I am a software engineer with 5 years of experience in web development. I love coding and learning new technologies.",
-  //   "I am Jane Smith, a data scientist with a passion for machine learning. I have worked on various projects involving data analysis and visualization.",
-  `Acceptance Criteria of Create Measure Field
-1. Admin should be able to define key properties for creating measure : Measurement Name (required) , Filed and column apply the measurement on (required) and conditions.
-2. Data source could be measure , table and subquery.
-3. Alias should not duplicated.
-4. Alias is required except when field type is Table
-5. Rule for value type : 
-5.1.User able to specify value as either numerical or string value.
-6.Rule for Table type :
-6.1. User able to select either primary table and joined table. (Note : tables should have been joined before creating field)
-6.2. If joined table is removed , the system will prompt a notification indicating that related fields are no longer available.
-6.3. User have to GROUP BY data before applying an aggregate function to know how to group the rows together before it can calculate the summary values. Without GROUP BY, the database would not know which rows should be combined or summarized together.
+	`### Acceptance Criteria for Create Measure Field
 
-7. Rule for Expression type : 
-7.1.User able to apply only numerical column and numerical value in Expression.
-8. Rule for Condition type : 
-8.1.The value type of True and False is depended on type of selected table. If table is numerical data, user able to specify TRUE/False value only number.`,
+1. **Key Properties Definition:**
+   - Admin must be able to define key properties:
+     - Measurement Name (required)
+     - Field and column to apply the measurement on (required)
+     - Conditions
 
-  `Acceptance Criteria of Create Measure type Filter
-1.Admin able to add multiple query filters.
-2.System supports combining multiple filters using AND logic.
-3.Admin able to specify the filter key properties : table , column , operation and value.
-4.Admin can directly use selected table for creating filter , no need to joined first.
-5.If a table or column used in the filter is deleted or unavailable, the system must alert the user and require correction.
-6.System should validated all required filed before saving ; otherwise , a proper alert message should display.
-7.To save , filter and filed must be created prior saving the measurement `,
-];
+2. **Data Source Options:**
+   - Can be a measure, table, or subquery.
+
+3. **Alias Management:**
+   - Alias must not be duplicated.
+   - Alias is required unless the field type is Table.
+
+4. **Value Type Rules:**
+   - User can specify value as either numerical or string.
+
+5. **Table Type Rules:**
+   - User can select either primary or joined tables (tables must be joined prior).
+   - If a joined table is removed, the system must notify the user about unavailable fields.
+   - User must GROUP BY data before applying an aggregate function for summarizing records.
+
+### Acceptance Criteria for Create Measure Type Filter
+
+1. **Query Filters:**
+   - Admin can add multiple query filters.
+
+2. **Filter Logic:**
+   - System supports combining multiple filters with AND logic.
+
+3. **Filter Key Properties:**
+   - Admin specifies table, column, operation, and value for filters.
+
+4. **Table Selection:**
+   - Admin can use a selected table for creating a filter without prior joining.
+
+5. **Error Handling:**
+   - If a table or column in the filter is deleted or unavailable, the system must alert the user and require correction.
+
+6. **Validation:**
+   - System must validate all required fields before saving; otherwise, display a proper alert message.
+
+7. **Saving Requirements:**
+   - Filter and field must be created before saving the measurement.
+`
+]
 
 // const question =
 //   "Specify the title name of acceptance criteria that  involve applying math logical and function";
 
-const question = "What data should user have to specify for creating field";
+const question = "Can user configure multiple function in a measure such as configure group by and Join together";
 //   "Which user story includes the acceptance criterion that the user unable to input duplicate Alias name and name must be unique.";
 
 async function main() {
   const splitter = new RecursiveCharacterTextSplitter({
     chunkSize: 500,
-    chunkOverlap: 100,
+    chunkOverlap: 50,
   });
 
   const docs = await splitter.createDocuments(data);
 
   const vectorStore = new MemoryVectorStore(new OpenAIEmbeddings());
+//   const documents = data.map(
+// 	(item) =>
+// 	  new Document({
+// 		pageContent: JSON.stringify(item),
+// 		metadata: {},
+// 	  })
+//   );
   await vectorStore.addDocuments(docs);
   //   await vectorStore.addDocuments(
   //     data.map((content) => new Document({ pageContent: content }))
   //   );
 
   const retriever = vectorStore.asRetriever({
-    k: 8,
+    k: 4,
   });
 
   console.log("Retrieving documents...");
