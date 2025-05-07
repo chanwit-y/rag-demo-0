@@ -1,6 +1,6 @@
 import { ChatOpenAI, OpenAIEmbeddings } from "@langchain/openai";
 import { MemoryVectorStore } from "langchain/vectorstores/memory";
-import { Document } from "@langchain/core/documents";
+// import { Document } from "@langchain/core/documents";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 
@@ -175,7 +175,8 @@ const data = [
 // const question =
 //   "Specify the title name of acceptance criteria that  involve applying math logical and function";
 
-const question = "Can user configure multiple function in a measure such as configure group by and Join together";
+const question = "What data should user have to specify for creating field"
+//"Can user configure multiple function in a measure such as configure group by and Join together";
 //   "Which user story includes the acceptance criterion that the user unable to input duplicate Alias name and name must be unique.";
 
 async function main() {
@@ -214,6 +215,10 @@ async function main() {
     [
       "system",
       "Answer the user question based on the following context: {context}.",
+    ],
+    [
+	"system",
+	`You are a careful assistant helping answer user questions. Use only the information in the retrieved context below. If an answer is not explicitly stated, reply: "The provided information does not contain enough detail to answer that." Do not make up any rules, steps, or details that are not in the given context.`
     ],
     //     ['system', "You are an expert SQL generator. Use the table definitions below to write a SQL query that answers the question."],
     ["user", "{input}"],
