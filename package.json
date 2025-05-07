@@ -1,0 +1,20 @@
+{
+  "name": "rag-demo-0",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "bun run ./src/index.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "chroma": "^0.0.1",
+    "langchain": "^0.3.24",
+    "openai": "^4.97.0"
+  }
+}
