@@ -1,7 +1,7 @@
 import { ChatOpenAI, OpenAIEmbeddings } from "@langchain/openai";
 import { MemoryVectorStore } from "langchain/vectorstores/memory";
 // import { Document } from "@langchain/core/documents";
-import { ChatPromptTemplate } from "@langchain/core/prompts";
+import { ChatPromptTemplate, MessagesPlaceholder } from "@langchain/core/prompts";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 
 const model = new ChatOpenAI({
@@ -124,6 +124,103 @@ const model = new ChatOpenAI({
 //       ]
 
 const data = [
+	`for your user story, broken down by concept/functionality. This will help developers, designers, or documenters to clearly organize and address needs for the "Create Measure: Field" feature.
+
+---
+
+### 1. Navigation & Access
+
+**A. Measure menu:**  
+- *Type*: Menu Tab  
+- *Purpose*: Allows Admin to access the Measure Studio  
+- *Action*: Click 'Measure' under Admin menu
+
+---
+
+### 2. Measure Listing and Creation
+
+**B. + New Measure Button:**  
+- *Type*: Button (Clickable)  
+- *Purpose*: Initiates creation of a new Measure project  
+- *Action*: Opens configuration modal when clicked
+
+---
+
+### 3. Configuration Modal (Measure Project Fields)
+
+**C. Measure Name:**  
+- *Type*: Text Input  
+- *Purpose*: Sets project name for display in data table  
+- *Validation*: Required, Must follow naming rules  
+
+**D. View Name:**  
+- *Type*: Text Input  
+- *Purpose*: Database identifier for the Measure  
+- *Validation*: Required, Must follow specific naming format  
+
+**E. Framework:**  
+- *Type*: Dropdown List  
+- *Purpose*: Select framework applicable to the measure  
+- *Validation*: Required, List provided
+
+**F. Activity:**  
+- *Type*: Dropdown List  
+- *Purpose*: Select activity applicable to the measure  
+- *Validation*: Required
+
+**G. Description:**  
+- *Type*: Text Input/Area  
+- *Purpose*: Optional description of the project  
+- *Validation*: Optional
+
+**H. Measure Status:**  
+- *Type*: Radio Buttons (Active/Inactive)  
+- *Purpose*: Specifies if the measure is applied  
+- *Validation*: Required, Default = 'Active'  
+
+**I. Data Source:**  
+- *Type*: Multi-select Dropdown List  
+- *Purpose*: Select one or many raw data sources/tables for calculation  
+- *Validation*: Required
+
+**J. Primary Table:**  
+- *Type*: Dropdown List  
+- *Purpose*: Selects main field for mathematical calculations  
+- *Validation*: Required  
+
+---
+
+### 4. Form Submission
+
+**K. Submit Button:**  
+- *Type*: Button  
+- *Action*: Saves the project and closes modal  
+- *Validation*: All required fields must be complete
+
+---
+
+### 5. Visual Feedback
+
+- Highlight or indicate incomplete required fields if user attempts to submit without filling them.
+- Show confirmation on successful creation and close modal.
+- Show error if submission or validation fails.
+
+---
+
+### User Flows
+
+1. **Accessing Measure Studio:**  
+   Admin navigates via Menu → Click 'Measure' → Measure Table and Details visible.
+2. **Creating a New Measure:**  
+   Click '+ New Measure'→ Modal opens → Complete required fields → Submit → Modal closes, Measure appears in list.
+
+---
+
+### Field Validation (General)
+
+- All *Required* fields must be validated before submission (present, correctly formatted).
+- Optional fields can be left blank.
+`,
 	`### Acceptance Criteria for Create Measure Field
 
 1. **Key Properties Definition:**
@@ -175,19 +272,23 @@ const data = [
 // const question =
 //   "Specify the title name of acceptance criteria that  involve applying math logical and function";
 
-const question = "What data should user have to specify for creating field"
+const question = "Create advanced , negative and unusual test scenarios with explicit test steps for the “Create Measure” feature, based on the Field User Story: “Allow Admin to create a measure in Measure Studio.”" 
+//"Create detailed QA test scenarios with explicit test steps for the “Create Measure” feature, based on the Field User Story: “Allow Admin to create a measure in Measure Studio.” Include more complex scenarios to help reproduce potential defects."; 
+//"What data should user have to specify for creating field"
 //"Can user configure multiple function in a measure such as configure group by and Join together";
 //   "Which user story includes the acceptance criterion that the user unable to input duplicate Alias name and name must be unique.";
 
 async function main() {
   const splitter = new RecursiveCharacterTextSplitter({
-    chunkSize: 500,
-    chunkOverlap: 50,
+    chunkSize: 1000,
+    chunkOverlap: 200,
   });
 
   const docs = await splitter.createDocuments(data);
-
+  
   const vectorStore = new MemoryVectorStore(new OpenAIEmbeddings());
+
+  await vectorStore.addDocuments(docs);
 //   const documents = data.map(
 // 	(item) =>
 // 	  new Document({
@@ -195,7 +296,11 @@ async function main() {
 // 		metadata: {},
 // 	  })
 //   );
-  await vectorStore.addDocuments(docs);
+//   const documents = data.map((content) => ({
+//     pageContent: content,
+//     metadata: {},
+//   }));
+//   await vectorStore.addDocuments(documents);
   //   await vectorStore.addDocuments(
   //     data.map((content) => new Document({ pageContent: content }))
   //   );
@@ -218,21 +323,40 @@ async function main() {
     ],
     [
 	"system",
+	`As a QA tester, I have solid expertise in testing web applications and websites, ensuring their functionality, usability, and performance.`
+    ],
+    [
+	"system",
 	`You are a careful assistant helping answer user questions. Use only the information in the retrieved context below. If an answer is not explicitly stated, reply: "The provided information does not contain enough detail to answer that." Do not make up any rules, steps, or details that are not in the given context.`
     ],
+    new MessagesPlaceholder("chat_history"),
     //     ['system', "You are an expert SQL generator. Use the table definitions below to write a SQL query that answers the question."],
     ["user", "{input}"],
   ]);
 
   const chain = template.pipe(model);
+
+
+
   const res = await chain.invoke({
     input: question,
     context: retrievedContent,
   });
+
+
+  
 
   console.log("---------------------------------------");
   console.log("Question:", question);
   console.log("Response:", res.content);
 }
 
-main();
+
+
+
+// const prompt = "Type something: ";
+// process.stdout.write(prompt);
+// for await (const line of console) {
+//   console.log(`You typed: ${line}`);
+//   process.stdout.write(prompt);
+// }
