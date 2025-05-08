@@ -4,17 +4,22 @@ import {
   ChatPromptTemplate,
   MessagesPlaceholder,
 } from "@langchain/core/prompts";
-import { docUserstoryOE1 } from "./data/oe-userstory-1";
+import { data, docUserstoryOE1, text } from "./data/oe-userstory-1";
 import {
   AIMessage,
   HumanMessage,
   type MessageContent,
 } from "@langchain/core/messages";
+import { MarkdownTextSplitter } from "langchain/text_splitter";
+
+const k = 5;
 
 const model = new ChatOpenAI({
   model: "gpt-4.1",
   temperature: 0.7,
 });
+
+  const embeddings = new OpenAIEmbeddings();
 
 const template = ChatPromptTemplate.fromMessages([
   [
@@ -41,12 +46,49 @@ let beforeHumanMessage = "";
 let beforeAIMessage = "";
 
 async function initVectorData() {
-  const vectorStore = new MemoryVectorStore(new OpenAIEmbeddings());
-  await vectorStore.addDocuments(docUserstoryOE1);
+  const vectorStore = new MemoryVectorStore(embeddings);
+  // await vectorStore.addDocuments(docUserstoryOE1);
+  const chunks = await semanticChunkText(text);
+  const documents = chunks.map((chunk) => ({ pageContent: chunk, metadata: {} }));
+  await vectorStore.addDocuments(documents);
   const retriever = vectorStore.asRetriever({
-    k: 4,
+    k,
   });
   return retriever;
+}
+
+// // Helper: Cosine similarity
+// function cosineSimilarity(vecA: number[], vecB: number[]): number {
+//   const dot = vecA.reduce((sum, a, idx) => sum + a * vecB[idx], 0);
+//   const normA = Math.sqrt(vecA.reduce((sum, a) => sum + a * a, 0));
+//   const normB = Math.sqrt(vecB.reduce((sum, b) => sum + b * b, 0));
+//   return dot / (normA * normB);
+// }
+
+// async function semanticChunkText(text: string, similarity=0.85) {
+async function semanticChunkText(text: string) {
+  const splitter = new MarkdownTextSplitter();
+  const chunks = await splitter.splitText(text);
+
+  return chunks;
+  // console.log('chunks', chunks)
+
+  // const vectors = await Promise.all(chunks.map(chunk => embeddings.embedQuery(chunk)));
+
+  // const result: string[] = [];
+  // let buffer = chunks[0];
+
+  // for (let i = 1; i < chunks.length; ++i) {
+  //   const sim = cosineSimilarity(vectors[i - 1], vectors[i]);
+  //   if (sim > similarity) {
+  //     buffer += " " + chunks[i];
+  //   } else {
+  //     result.push(buffer);
+  //     buffer = chunks[i];
+  //   }
+  // }
+  // if (buffer) result.push(buffer);
+  // return result;
 }
 
 async function chat(question: string): Promise<MessageContent> {
@@ -80,5 +122,12 @@ async function main() {
     process.stdout.write(prompt);
   }
 }
+
+// async function testSemanticChunkText() {
+//   const semanticChunks = await semanticChunkText(text);
+//   console.log(semanticChunks);
+// }
+
+// testSemanticChunkText();
 
 main();

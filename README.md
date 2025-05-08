@@ -25,3 +25,8 @@ chunk_size = 500
 chunk_overlap = 100
 K = 4 (สามารถปรับเพิ่ม/ลดตามคำถามหรือการทดลองใช้งานจริง)
 ต้องการใช้กับข้อมูลประเภทใด (เช่น เอกสารภายในบริษัท, รายงานวิจัย, FAQ)?
+
+
+
+Create detailed QA test scenarios with explicit test steps for the “Create Measure” feature, based on the Field User Story: “Allow Admin to create a measure in Measure Studio.” Include more complex scenarios to help reproduce potential defects.
+Create advanced , negative and unusual test scenarios with explicit test steps for the “Create Measure” feature, based on the Field User Story: “Allow Admin to create a measure in Measure Studio.”
