@@ -11,12 +11,13 @@ import {
   type MessageContent,
 } from "@langchain/core/messages";
 import { MarkdownTextSplitter } from "langchain/text_splitter";
+import { a } from "./data/combined";
 
 const k = 5;
 
 const model = new ChatOpenAI({
   model: "gpt-4.1",
-  temperature: 0.7,
+  temperature: 0.5,
 });
 
   const embeddings = new OpenAIEmbeddings();
@@ -57,7 +58,7 @@ async function initVectorData() {
   return retriever;
 }
 
-// // Helper: Cosine similarity
+// Helper: Cosine similarity
 // function cosineSimilarity(vecA: number[], vecB: number[]): number {
 //   const dot = vecA.reduce((sum, a, idx) => sum + a * vecB[idx], 0);
 //   const normA = Math.sqrt(vecA.reduce((sum, a) => sum + a * a, 0));
@@ -124,8 +125,8 @@ async function main() {
 }
 
 // async function testSemanticChunkText() {
-//   const semanticChunks = await semanticChunkText(text);
-//   console.log(semanticChunks);
+//   const semanticChunks = await semanticChunkText(a);
+//   console.log("semanticChunks", semanticChunks);
 // }
 
 // testSemanticChunkText();
